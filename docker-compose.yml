@@ -22,6 +22,8 @@ services:
       # Additional labels for specific domain routing will be handled by Dokploy UI
       # or can be uncommented below:
       # - "traefik.http.routers.appflowy-nginx.rule=Host(`${DOMAIN_NAME}`)"
+    networks:
+      - internal
 
   minio:
     restart: on-failure
@@ -41,6 +43,8 @@ services:
     expose:
       - "9000"
       - "9001"
+    networks:
+      - internal
 
   postgres:
     restart: on-failure
@@ -56,10 +60,14 @@ services:
       retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
 
   redis:
     restart: on-failure
     image: redis
+    networks:
+      - internal
 
   gotrue:
     restart: on-failure
@@ -83,6 +91,8 @@ services:
       - GOTRUE_SMTP_USER=${GOTRUE_SMTP_USER}
       - GOTRUE_SMTP_PASS=${GOTRUE_SMTP_PASS}
       - GOTRUE_MAILER_AUTOCONFIRM=${GOTRUE_MAILER_AUTOCONFIRM:-true}
+    networks:
+      - internal
 
   appflowy_cloud:
     restart: on-failure
@@ -103,6 +113,8 @@ services:
       - APPFLOWY_S3_BUCKET=${APPFLOWY_S3_BUCKET}
       - APPFLOWY_ACCESS_CONTROL=${APPFLOWY_ACCESS_CONTROL}
       - APPFLOWY_WEB_URL=${APPFLOWY_WEB_URL}
+    networks:
+      - internal
 
   appflowy_worker:
     restart: on-failure
@@ -118,6 +130,8 @@ services:
       - APPFLOWY_S3_ACCESS_KEY=${APPFLOWY_S3_ACCESS_KEY}
       - APPFLOWY_S3_SECRET_KEY=${APPFLOWY_S3_SECRET_KEY}
       - APPFLOWY_S3_BUCKET=${APPFLOWY_S3_BUCKET}
+    networks:
+      - internal
 
   admin_frontend:
     restart: on-failure
@@ -128,6 +142,8 @@ services:
     depends_on:
       appflowy_cloud:
         condition: service_started
+    networks:
+      - internal
 
   appflowy_web:
     restart: on-failure
@@ -136,7 +152,13 @@ services:
       - APPFLOWY_BASE_URL=${APPFLOWY_BASE_URL}
       - APPFLOWY_GOTRUE_BASE_URL=${APPFLOWY_BASE_URL}/gotrue
       - APPFLOWY_WS_BASE_URL=${APPFLOWY_WS_BASE_URL}
+    networks:
+      - internal
 
 volumes:
   postgres_data:
   minio_data:
+
+
+networks:
+  internal:
