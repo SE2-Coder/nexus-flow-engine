@@ -1,30 +1,60 @@
 # Nexus Flow Engine (AppFlowy Self-Hosted)
 
-A robust, self-hosted deployment configuration for AppFlowy, optimized for containerized environments like Dokploy (Docker Swarm/Compose).
+A robust, self-hosted deployment configuration for AppFlowy, optimized for containerized environments like **Dokploy** (Docker Swarm/Compose).
 
 ## 🚀 Features
 
-*   **Full Stack**: Includes AppFlowy Cloud, Web, Admin Frontend, Worker, GoTrue (Auth), Postgres, Redis, and MinIO.
-*   **Reverse Proxy**: Pre-configured Nginx gateway to route traffic to internal microservices.
-*   **Production Ready**: Optimized `docker-compose.yml` with health checks, restart policies, and volume persistence.
-*   **Dokploy Compatible**: Ready to be deployed as a Docker Compose Stack.
+*   **Full Stack**: Contains all necessary microservices (Cloud, Web, Auth, Database, Storage).
+*   **Production Ready**: Configured with Nginx as an internal gateway and Traefik labels for Dokploy.
+*   **Secure Auth**: Pre-configured for GoTrue with SMTP (Email) and OAuth support.
 
 ## 🛠 Deployment Guide (Dokploy)
 
-1.  **Clone/Connect**: Connect this repository to your Dokploy project.
-2.  **Environment Variables**: Copy the content of `.env.example` to the **Environment** tab in Dokploy.
-    *   Update `APPFLOWY_BASE_URL`, `APPFLOWY_WEB_URL`, and `API_EXTERNAL_URL` to your actual domain (e.g., `https://flowy.yourdomain.com`).
-    *   Update `APPFLOWY_WS_BASE_URL` to `wss://flowy.yourdomain.com/ws/v2`.
-    *   Set secure passwords for Postgres and MinIO.
-3.  **Deploy**: Click "Deploy".
-4.  **Domain Mapping**: In Dokploy, point your domain to the `nginx` service (Port 80).
+This repository is designed to be deployed directly via Dokploy's **GitHub** integration.
 
-## 📂 Architecture
+### 1. Prerequisites
+*   A Dokploy server set up.
+*   A domain or sub-domain (e.g., `flowy.yourdomain.com`) pointing to your server IP via Cloudflare (Proxy OFF initially).
+*   An SMTP provider for emails (Gmail, SendGrid, SES, etc.).
 
-*   **Nginx**: Entry point (Port 80/443).
-*   **AppFlowy Cloud**: Core API (Port 8000).
-*   **AppFlowy Web**: Frontend (Port 80).
-*   **GoTrue**: Authentication Service (Port 9999).
-*   **Postgres**: Database (Port 5432).
-*   **Redis**: Cache & Message Broker.
-*   **MinIO**: S3-compatible Object Storage.
+### 2. Connect Repository
+1.  In Dokploy, go to your Project.
+2.  Click **Create Service** -> **Compose**.
+3.  Choose **GitHub** as the provider (Ensure your GitHub account is connected in Dokploy settings).
+4.  Select this repository: `SE2-Coder/nexus-flow-engine`.
+5.  Branch: `main`.
+
+### 3. Environment Configuration
+1.  Go to the **Environment** tab in your new service.
+2.  Copy the contents of `.env.example`.
+3.  **IMPORTANT**: Fill in the real values:
+    *   **Domain**: Replace `your-domain.com` with your actual domain in all URLs (`APPFLOWY_BASE_URL`, `APPFLOWY_WEB_URL`, etc).
+    *   **Secrets**: Generate strong passwords for `POSTGRES_PASSWORD`, `AWS_SECRET`, and `GOTRUE_JWT_SECRET`.
+    *   **Email**: Fill in the `SMTP` section. Without this, you cannot register users.
+
+### 4. Deploy & Expose
+1.  Click **Deploy**.
+2.  Once running (Green status), go to the **Domains** tab.
+3.  Add your domain:
+    *   **Service**: `nginx`
+    *   **Port**: `80`
+    *   **Path**: `/`
+    *   **HTTPS**: Enable Let's Encrypt.
+4.  Click **Create**.
+
+## 📧 Email Setup (SMTP)
+
+To enable user registration, you need an SMTP server.
+
+**Example (Gmail):**
+*   Host: `smtp.gmail.com`
+*   Port: `465`
+*   User: `your@gmail.com`
+*   Pass: `your-app-password` (Not your login password, generate one in Google Account Security).
+
+## 🔒 OAuth Setup (Optional)
+
+To enable "Login with Google/GitHub":
+1.  Create an OAuth App in the provider's developer console.
+2.  Set the Callback URL to: `https://your-domain.com/gotrue/callback`.
+3.  Add the Client ID and Secret to your Dokploy Environment variables.
