@@ -83,6 +83,7 @@ services:
       - GOTRUE_SITE_URL=${APPFLOWY_WEB_URL}
       - GOTRUE_JWT_SECRET=${GOTRUE_JWT_SECRET}
       - GOTRUE_JWT_EXP=${GOTRUE_JWT_EXP}
+      - GOTRUE_JWT_AUD=authenticated
       - GOTRUE_JWT_ADMIN_GROUP_NAME=supabase_admin
       - GOTRUE_DB_DRIVER=postgres
       - API_EXTERNAL_URL=${API_EXTERNAL_URL}
