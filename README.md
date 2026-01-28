@@ -58,3 +58,16 @@ To enable "Login with Google/GitHub":
 1.  Create an OAuth App in the provider's developer console.
 2.  Set the Callback URL to: `https://your-domain.com/gotrue/callback`.
 3.  Add the Client ID and Secret to your Dokploy Environment variables.
+
+## ❓ Troubleshooting
+
+### Login Issues & "Magic Link" Failures
+If you encounter issues where the login request hangs, is cancelled, or the page reloads without logging in despite a "200 OK" server status:
+
+*   **AdBlockers / Brave Shields**: Aggressive privacy blockers (like Brave Shields or uBlock Origin) may block the authentication requests (specifically to `gotrue`) misidentifying them as tracking scripts.
+    *   **Solution**: Disable "Shields" or AdBlockers for your self-hosted domain.
+*   **Cookies**: Ensure your browser allows Third-Party cookies if you are running cross-domain, although this setup uses a single domain to avoid this.
+
+### Admin Console
+*   Access the console at `/console` (e.g., `https://flowy.yourdomain.com/console`).
+*   **"Incorrect Credentials"**: If you changed the admin password in `.env` *after* the first deployment, the database might still have the old one. Use the "Forgot Password" feature on the main login page to reset it.
